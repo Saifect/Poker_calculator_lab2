@@ -462,6 +462,8 @@ void calculate_probabilities(Game* game, bool used_cards[RANKS_SIZE][SUITS_SIZE]
 void print_probabilityMenu(Game* game, bool used_cards[RANKS_SIZE][SUITS_SIZE]);
 void compare_all_hands(Game* game, PokerCombination hands[], PokerCombination board_combination);
 void calculate_probabilities_debugging(Game* game, Settings_debugging_mode* settings, Board simulated_board, PokerCombination* player_hands, int current_simulation, bool tie, int best_player);
+int compare_kickers(const Rank* kicker1, const Rank* kicker2);
+
 
 //============MAIN_FUNCTION============//
 int main() {
@@ -2071,45 +2073,68 @@ Card generate_random_card(bool used_cards[RANKS_SIZE][SUITS_SIZE]) {
 
     return card;
 }
-int compare_hands(PokerCombination hand1, PokerCombination hand2, PokerCombination board_combination) {
-    // Проверка, если оба игрока используют комбинацию доски
-    if (hand1.hand_rank == board_combination.hand_rank && hand2.hand_rank == board_combination.hand_rank) {
-        if (hand1.high_card == board_combination.high_card && hand2.high_card == board_combination.high_card) {
-            return 0; // Ничья, оба игрока используют комбинацию доски
-        }
-    }
 
-    // Сравниваем комбинации, если они сильнее доски
+int compare_kickers(const Rank* kicker1, const Rank* kicker2) {
+    for (int i = 0; i < 5; i++) {
+        if (kicker1[i] > kicker2[i]) return 1;
+        if (kicker1[i] < kicker2[i]) return -1;
+    }
+    return 0; // Ничья
+}
+
+
+int compare_hands(PokerCombination hand1, PokerCombination hand2, PokerCombination board_combination) {
+    // Сравниваем комбинации
     if (hand1.hand_rank > hand2.hand_rank) return 1;
     if (hand1.hand_rank < hand2.hand_rank) return -1;
-
-    // Сравнение по старшей карте, если ранги равны
+    // Сравнение по старшей карте
     if (hand1.high_card > hand2.high_card) return 1;
     if (hand1.high_card < hand2.high_card) return -1;
 
-    // Сравнение по кикерам в зависимости от комбинации
     switch (hand1.hand_rank) {
     case STRAIGHT:
     case STRAIGHT_FLUSH:
-        if (hand1.high_card == hand2.high_card) {
-            return 0; // Ничья
-        }
+        // Сравнение по кикерам
+        return compare_kickers(hand1.kicker, hand2.kicker);
+        if (hand1.high_card == hand2.high_card) return 0;
         break;
 
     case FOUR_OF_A_KIND:
     case FULL_HOUSE:
-        if (hand1.kicker[0] > hand2.kicker[0]) return 1;
-        if (hand1.kicker[0] < hand2.kicker[0]) return -1;
+        // Сравнение по кикерам
+        return compare_kickers(hand1.kicker, hand2.kicker);
         break;
 
     case THREE_OF_A_KIND:
+        // у трипса только один кикер //
+        for (int i = 0; i < 2; i++) {
+            // Сравнение по кикерам
+            return compare_kickers(hand1.kicker, hand2.kicker);
+        }
+        break;
+
     case ONE_PAIR:
     case TWO_PAIR:
+        // для пары и двух пар используются три кикера //
+        for (int i = 0; i < 3; i++) {
+            // Сравнение по кикерам
+            return compare_kickers(hand1.kicker, hand2.kicker);
+        }
+        break;
+
     case FLUSH:
-    case HIGH_CARD:
+        // у флеша все пять карт сравниваются по убыванию //
         for (int i = 0; i < 5; i++) {
-            if (hand1.kicker[i] > hand2.kicker[i]) return 1;
-            if (hand1.kicker[i] < hand2.kicker[i]) return -1;
+            // Сравнение по кикерам
+            return compare_kickers(hand1.kicker, hand2.kicker);
+        }
+        break;
+
+    case HIGH_CARD:
+        // у старшей карты все пять карт сравниваются //
+        for (int i = 0; i < 5; i++) {
+            // Сравнение по кикерам
+            return compare_kickers(hand1.kicker, hand2.kicker);
         }
         break;
 
@@ -2117,7 +2142,7 @@ int compare_hands(PokerCombination hand1, PokerCombination hand2, PokerCombinati
         break;
     }
 
-    return 0; // Ничья, если не было различий
+
 }
 
 
@@ -2285,13 +2310,15 @@ PokerCombination determine_hand_combination(Hand hand, Board board) {
     }
 
 
+
     // Если комбинация игрока слабее или такая же, как на доске
-    if (result.hand_rank < board_combination.hand_rank) {
+    if (result.hand_rank <= board_combination.hand_rank && result.high_card <= board_combination.high_card) {
         return board_combination;  // Возвращаем комбинацию доски
     }
     else {
         return result;
     }
+
 }
 
 PokerCombination determine_board_combination(Board board) {
@@ -2455,8 +2482,6 @@ PokerCombination determine_board_combination(Board board) {
 
     return result;
 }
-
-
 
 void calculate_probabilities(Game* game, bool used_cards[RANKS_SIZE][SUITS_SIZE], int choice_numSimulations, Settings_debugging_mode* settings) {
     // Обнуляем статистику побед, поражений и ничьих для каждого игрока
