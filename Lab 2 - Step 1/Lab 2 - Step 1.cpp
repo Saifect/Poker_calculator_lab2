@@ -331,6 +331,7 @@ public:
         num_players = num;
     }
 
+
     // Очистка всех карт игроков
     void clear_all_players_cards(bool used_cards[15][4], bool mute_mode = false) {
         for (int i = 0; i < current_players; i++) {
