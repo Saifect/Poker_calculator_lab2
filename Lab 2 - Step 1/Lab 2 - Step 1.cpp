@@ -9,85 +9,83 @@
 #include <string.h>
 #include <conio.h>
 
-#define NUM_RANKS 15
+#define NUM_RANKS 14
 #define NUM_SUITS 5
 
 //Масть карты//
 typedef enum {
-    NONE_SUIT,
+    NONE_SUIT = -1,
     HEARTS,   // Черви
     DIAMONDS, // Бубны
     CLUBS,    // Трефы
     SPADES,   // Пики
-
 }Suit;
 
 //Ранк карты//
 typedef enum {
-    NONE_RANK, TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN,
+    NONE_RANK = -1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN,
     JACK, QUEEN, KING, ACE
 } Rank;
 
 class Card {
+private:
+    Suit suit;
+    Rank rank;
+    bool is_used; // Флаг использования карты
+
 public:
-    // Функция для получения имени масти (константная версия)
-    const char* get_suit_name(Suit suit) const {
-        switch (suit) {
-        case NONE_SUIT: return "Нет";
-        case HEARTS:    return "Черви";
-        case DIAMONDS:  return "Бубны";
-        case CLUBS:     return "Трефы";
-        case SPADES:    return "Пики";
-        default:        return "Неизвестно";
-        }
-    }
-    // Функция для получения имени ранга (константная версия)
-    const char* get_rank_name(Rank rank) const {
-        switch (rank) {
-        case NONE_RANK: return "Нет";
-        case TWO:       return "Двойка";
-        case THREE:     return "Тройка";
-        case FOUR:      return "Четверка";
-        case FIVE:      return "Пятерка";
-        case SIX:       return "Шестерка";
-        case SEVEN:     return "Семерка";
-        case EIGHT:     return "Восьмерка";
-        case NINE:      return "Девятка";
-        case TEN:       return "Десятка";
-        case JACK:      return "Валет";
-        case QUEEN:     return "Дама";
-        case KING:      return "Король";
-        case ACE:       return "Туз";
-        default:        return "Неизвестно";
-        }
-    }
-
-
-
     // Конструктор по умолчанию
-    Card() : suit(NONE_SUIT), rank(NONE_RANK) {};
+    Card() : suit(NONE_SUIT), rank(NONE_RANK), is_used(false) {};
 
     // Конструктор с параметрами
-    Card(Suit suit, Rank rank) : suit(suit), rank(rank) {}
+    Card(Suit suit, Rank rank) : suit(suit), rank(rank), is_used(false) {}
 
-    // Инициализация карты
-    void init_card(Suit suit, Rank rank) {
-        this->suit = suit;
-        this->rank = rank;
-    }
-
-    // Случайная инициализация карты
-    void init_random_сard(Card* card) {
-        card->suit = (Suit)(rand() % 4);
-        card->rank = (Rank)(rand() % 13 + 2);
-    }
-
-    // Функция для отображения карты (константная версия)
+    // Функция для отображения карты
     void print_card() const {
         printf("%s %s\n", get_rank_name(rank), get_suit_name(suit));
     }
 
-    // Геттеры для приватных полей
+    // Функция освобождения карты
+    void release_card(bool used_cards[NUM_RANKS][NUM_SUITS]) {
+        if (is_used && suit != NONE_SUIT && rank != NONE_RANK) {
+            used_cards[rank][suit] = false;
+            is_used = false; // Карта больше не используется
+        }
+        suit = NONE_SUIT;
+        rank = NONE_RANK;
+    }
+
+    // Инициализация карты
+    void init_card(Suit suit, Rank rank, bool used_cards[NUM_RANKS][NUM_SUITS]) {
+        release_card(used_cards); // Освобождаем старую карту, если она использовалась
+
+        if (used_cards[rank][suit]) {
+            printf("Ошибка: Карта %s %s уже используется!\n", get_rank_name(rank), get_suit_name(suit));
+            return;
+        }
+
+        this->suit = suit;
+        this->rank = rank;
+        used_cards[rank][suit] = true;
+        is_used = true; // Отмечаем карту как используемую
+    }
+
+    // Инициализация случайной карты
+    void init_random_card(bool used_cards[NUM_RANKS][NUM_SUITS]) {
+        release_card(used_cards); // Освобождаем старую карту
+
+        int rank, suit;
+        do {
+            suit = rand() % NUM_SUITS;
+            rank = rand() % NUM_RANKS;
+        } while (used_cards[rank][suit]);
+
+        this->suit = (Suit)suit;
+        this->rank = (Rank)rank;
+        used_cards[rank][suit] = true;
+        is_used = true; // Отмечаем карту как используемую
+    }
+
     Suit get_suit() const {
         return suit;
     }
@@ -96,41 +94,33 @@ public:
         return rank;
     }
 
-    // Сеттер для масти
-    void set_suit(Suit new_suit) {
-        suit = new_suit;
-    }
-
-    // Сеттер для ранга
-    void set_rank(Rank new_rank) {
-        rank = new_rank;
-    }
-
-private:
-    Suit suit;
-    Rank rank;
-
 };
 
-
 class Hand {
-public:
-    Hand() {} // Конструктор по умолчанию
+private:
+    Card card[2]; // Две карты руки
 
-    Hand(const Card& card1, const Card& card2) { // Конструктор с параметрами
+public:
+    // Конструктор по умолчанию
+    Hand() {
+        card[0] = Card(); // Инициализируем первую карту как пустую
+        card[1] = Card(); // Инициализируем вторую карту как пустую
+    }
+
+    // Конструктор с параметрами
+    Hand(const Card& card1, const Card& card2) {
         card[0] = card1;
         card[1] = card2;
     }
 
+    // Установка карты
     void set_card(int index, const Card& card) {
         if (index < 0 || index >= 2) {
             printf("Ошибка: индекс карты вне допустимого диапазона (0 или 1).\n");
             return;
         }
-        this->card[index] = card; // Устанавливаем карту по индексу
-
+        this->card[index] = card;
     }
-
 
     // Инициализация руки
     void init_hand(const Card& card1, const Card& card2) {
@@ -139,9 +129,9 @@ public:
     }
 
     // Очистка руки
-    void clear_hand() {
-        card[0].init_card(NONE_SUIT, NONE_RANK);
-        card[1].init_card(NONE_SUIT, NONE_RANK);
+    void clear_hand(bool used_cards[NUM_RANKS][NUM_SUITS]) {
+        card[0].release_card(used_cards);
+        card[1].release_card(used_cards);
     }
 
     // Геттер для карты
@@ -150,80 +140,84 @@ public:
     }
 
     Card& get_card(int index) {
-        return card[index]; // Измените на неконстантную ссылку
+        return card[index];
     }
 
+  
 
-private:
-    Card card[2]; // Две карты руки
+
 };
 
 class Player {
+
+private:
+    Hand hand;         // Рука игрока
+    double equity;     // Вероятность победы
+    int wins;          // Количество побед
+    int ties;          // Количество ничьих
+    int losses;        // Количество поражений
+
 public:
     Player() : equity(0.0), wins(0), ties(0), losses(0) {}
 
-    // Сеттеры для приватных полей
+    // Сеттеры для статистики
     void set_equity(double e) { equity = e; }
     void set_wins(int w) { wins = w; }
     void set_ties(int t) { ties = t; }
     void set_losses(int l) { losses = l; }
 
     // Геттер для доступа к руке
-    Hand& get_hand() {  // Убрали const, чтобы разрешить изменение руки
+    Hand& get_hand() {
         return hand;
     }
 
+    // Сеттер для установки руки игрока
+    void set_hand(const Hand& h, bool used_cards[NUM_RANKS][NUM_SUITS]) {
+        clear_player_cards(used_cards); // Очищаем предыдущую руку
+        hand = h; // Устанавливаем новую руку
 
-    void set_hand(const Hand& h) {
-        hand = h;
+        // Помечаем карты как использованные
+        used_cards[hand.get_card(0).get_rank()][hand.get_card(0).get_suit()] = true;
+        used_cards[hand.get_card(1).get_rank()][hand.get_card(1).get_suit()] = true;
     }
 
     // Инициализация игрока
-    void init_player(const Hand& hand) {
-        this->hand = hand;
+    void init_player(const Hand& new_hand, bool used_cards[NUM_RANKS][NUM_SUITS]) {
+        set_hand(new_hand, used_cards);
         equity = 0.0;
     }
 
     // Очистка карт игрока
-    void clear_player_cards(bool used_cards[15][4], bool mute_mode = false) {
-        if (!mute_mode) {
-            if (hand.get_card(0).get_rank() == NONE_RANK || hand.get_card(1).get_rank() == NONE_RANK) {
-                printf("Рука игрока не задана, поэтому она не может быть очищена!\n");
-                return;
-            }
+    void clear_player_cards(bool used_cards[NUM_RANKS][NUM_SUITS]) {
+        // Если карты игрока не заданы, ничего не очищаем
+        if ((hand.get_card(0).get_rank() == NONE_RANK || hand.get_card(1).get_rank() == NONE_RANK)) {
+            printf("Рука игрока не задана, поэтому она не может быть очищена!\n");
+            return;
         }
 
-        used_cards[hand.get_card(0).get_rank()][hand.get_card(0).get_suit() - 1] = false;
-        used_cards[hand.get_card(1).get_rank()][hand.get_card(1).get_suit() - 1] = false;
+        // Снимаем флаг использования для каждой карты
+        Card& card1 = hand.get_card(0);
+        Card& card2 = hand.get_card(1);
 
-        hand.clear_hand();
+        if (card1.get_rank() != NONE_RANK && card1.get_suit() != NONE_SUIT) {
+            used_cards[card1.get_rank()][card1.get_suit()] = false;
+        }
+
+        if (card2.get_rank() != NONE_RANK && card2.get_suit() != NONE_SUIT) {
+            used_cards[card2.get_rank()][card2.get_suit()] = false;
+        }
+
+        // Очищаем руку, передаем массив used_cards для сброса флага использованных карт
+        hand.clear_hand(used_cards);
     }
 
     // Геттеры для получения статистики игрока
-    double get_equity() const {
-        return equity;
-    }
+    double get_equity() const { return equity; }
+    int get_wins() const { return wins; }
+    int get_ties() const { return ties; }
+    int get_losses() const { return losses; }
 
-    int get_wins() const {
-        return wins;
-    }
-
-    int get_ties() const {
-        return ties;
-    }
-
-    int get_losses() const {
-        return losses;
-    }
-
-private:
-    Hand hand;
-    double equity;
-    int wins;
-    int ties;
-    int losses;
 };
-
 
 class Board {
 public:
@@ -331,7 +325,6 @@ public:
         num_players = num;
     }
 
-
     // Очистка всех карт игроков
     void clear_all_players_cards(bool used_cards[15][4], bool mute_mode = false) {
         for (int i = 0; i < current_players; i++) {
@@ -365,7 +358,6 @@ private:
     Board board;          // Игровое поле
     char phase[10];       // Текущая фаза игры
 };
-
 
 // Покерные комбинации
 typedef enum {
@@ -409,13 +401,7 @@ void get_user_choice(int* choice);
 void handle_mainMenu_choice(Game* game, PokerCombination* result_player, int choice);
 void handle_probabilityMenu_choice(int choice, Game* game, bool* exit, bool used_cards[15][4], int* num_simulations, Settings_debugging_mode* settings_debugging_mode);
 void initialize_used_cards(Game* game, bool used_cards[15][4]);
-// Initialization Functions
-void init_card(Card* card, Suit suit, Rank rank);
-void init_random_сard(Card* card);
-void init_hand(Hand* hand, Card card1, Card card2);
-void init_player(Player* players, Hand hand);
-void init_board(Board* board);
-void init_game(Game* game, Player player1, Player player2, Board board, const char* phase);
+
 
 // Menu Handling Functions
 void handle_calculatorMenu_choice(int choice, Game* game, bool* exit, PokerCombination* result_player);
