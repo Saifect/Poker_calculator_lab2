@@ -55,7 +55,7 @@ public:
     void release_card(bool used_cards[NUM_RANKS][NUM_SUITS]);
 
     // Инициализация карты
-    void init_card(Suit suit, Rank rank, bool used_cards[NUM_RANKS][NUM_SUITS]);
+    void init_card(Suit suit, Rank rank);
 
     // Инициализация случайной карты
     void init_random_card(bool used_cards[NUM_RANKS][NUM_SUITS]);
@@ -129,12 +129,13 @@ private:
 
 public:
     Board();
-
+    Board(bool initial_used_cards[NUM_RANKS][NUM_SUITS]); // Новый конструктор
+    void set_used_cards(bool new_used_cards[NUM_RANKS][NUM_SUITS]);
     int get_num_cards() const;
     const Card& get_card(int index) const;
     void init_board();
     void set_num_cards(int num);
-    void set_card(int index, const Card& card, bool used_cards[NUM_RANKS][NUM_SUITS]);
+    void set_card(int index, const Card& card);
     void print_board_cards() const;
     void add_card(const Card& card, bool used_cards[NUM_RANKS][NUM_SUITS]);
     void clear_board(bool used_cards[NUM_RANKS][NUM_SUITS]);

@@ -56,7 +56,7 @@ void initialize_game(Game* game, int num_players) {
 
     // Инициализируем поле
     for (int i = 0; i < 5; i++) {
-        game->get_board().set_card(i, Card(NONE_SUIT, NONE_RANK), used_cards);
+        game->get_board().set_card(i, Card(NONE_SUIT, NONE_RANK));
     }
     game->get_board().set_num_cards(0);
 

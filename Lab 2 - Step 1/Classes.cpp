@@ -57,7 +57,7 @@ void Card::release_card(bool used_cards[NUM_RANKS][NUM_SUITS]) {
     rank = NONE_RANK;
 }
 
-void Card::init_card(Suit suit, Rank rank, bool used_cards[NUM_RANKS][NUM_SUITS]) {
+void Card::init_card(Suit suit, Rank rank) {
     release_card(used_cards);
 
     if (used_cards[rank][suit]) {
@@ -164,11 +164,14 @@ int Player::get_wins() const { return wins; }
 int Player::get_ties() const { return ties; }
 int Player::get_losses() const { return losses; }
 
+// Конструктор по умолчанию
 Board::Board() : num_cards(0) {
-    for (int i = 0; i < NUM_RANKS; ++i)
-        for (int j = 0; j < NUM_SUITS; ++j)
-            used_cards[i][j] = false;
+    
 }
+
+
+
+
 
 int Board::get_num_cards() const {
     return num_cards;
@@ -186,13 +189,8 @@ void Board::set_num_cards(int num) {
     num_cards = num;
 }
 
-void Board::set_card(int index, const Card& card, bool used_cards[NUM_RANKS][NUM_SUITS]) {
+void Board::set_card(int index, const Card& card) {
     if (index >= 0 && index < 5) {
-       
-
-        if (cards[index].get_rank() != NONE_RANK && cards[index].get_suit() != NONE_SUIT) {
-            used_cards[cards[index].get_rank()][cards[index].get_suit()] = false;
-        }
 
         if (used_cards[card.get_rank()][card.get_suit()]) {
             printf("Ошибка: Карта %s %s уже используется!\n",
@@ -201,9 +199,15 @@ void Board::set_card(int index, const Card& card, bool used_cards[NUM_RANKS][NUM
         }
 
         cards[index] = card;
-        
+
 
     }
+}
+
+void Board::set_used_cards(bool new_used_cards[NUM_RANKS][NUM_SUITS]) {
+    for (int i = 0; i < NUM_RANKS; ++i)
+        for (int j = 0; j < NUM_SUITS; ++j)
+            used_cards[i][j] = new_used_cards[i][j];
 }
 
 

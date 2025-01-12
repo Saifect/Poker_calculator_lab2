@@ -52,8 +52,8 @@ void handle_mainMenu_choice(Game* game, PokerCombination* result_player, int cho
         clearConsole();
         break;
     case 4:
-        printf("Status: Editing information - Done; Probability - 60% work power\n");
-        printf("Version program: 2.5x\n");
+        printf("Status: EditBoardMenu - Done; Probability - In development\n");
+        printf("Version program: 2.4x\n");
         printf("Author: Saifect@mail.ru\n");
         press_any_key_to_continue();
         break;
