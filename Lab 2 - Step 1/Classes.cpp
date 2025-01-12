@@ -190,33 +190,42 @@ void Board::set_num_cards(int num) {
 }
 
 void Board::set_card(int index, const Card& card) {
-    if (index < 0 || index >= 5) {
-        
-        return;
-    }
+    if (index >= 0 && index < 5) {
 
-    if (used_cards[card.get_rank()][card.get_suit()]) {
-        
+        if (used_cards[card.get_rank()][card.get_suit()]) {
          
-        return;
-    }
+            return;
+        }
 
-    if (card.get_rank() == NONE_RANK || card.get_suit() == NONE_SUIT) {
-       
-        return;
-    }
+        cards[index] = card;
 
-    // Установка карты и отметка как используемой
-    cards[index] = card;
- 
+
+    }
 }
-
 
 void Board::set_used_cards(bool new_used_cards[NUM_RANKS][NUM_SUITS]) {
     for (int i = 0; i < NUM_RANKS; ++i)
         for (int j = 0; j < NUM_SUITS; ++j)
             used_cards[i][j] = new_used_cards[i][j];
 }
+
+void Board::update_used_cards() {
+    // Сбрасываем состояние used_cards
+    for (int rank = 0; rank < NUM_RANKS; ++rank) {
+        for (int suit = 0; suit < NUM_SUITS; ++suit) {
+            used_cards[rank][suit] = false;
+        }
+    }
+
+    // Обновляем состояние на основе текущих карт на доске
+    for (int i = 0; i < 5; ++i) {
+        const Card& card = cards[i];
+        if (card.get_rank() != NONE_RANK && card.get_suit() != NONE_SUIT) {
+            used_cards[card.get_rank()][card.get_suit()] = true;
+        }
+    }
+}
+
 
 
 void Board::print_board_cards() const {

@@ -189,6 +189,10 @@ int compare_hands(PokerCombination hand1, PokerCombination hand2) {
     return 0; // Ничья
 }
 
+#include <cstdio>
+#include <cstring>
+
+// Функция определения лучшей покерной комбинации
 PokerCombination determine_hand(Hand hand, Board board) {
     PokerCombination result;
     result.hand_rank = HIGH_CARD;
@@ -199,31 +203,33 @@ PokerCombination determine_hand(Hand hand, Board board) {
     int suit_count[NUM_SUITS] = { 0 };
     Card all_cards[7];
 
-    // Собираем все карты
+    // Собираем все карты (с проверкой на переполнение)
+    if (2 + board.get_num_cards() > 7) {
+        return result; // Недопустимое количество карт
+    }
     all_cards[0] = hand.get_card(0);
     all_cards[1] = hand.get_card(1);
     for (int i = 0; i < board.get_num_cards(); i++) {
         all_cards[2 + i] = board.get_card(i);
     }
 
-    // Проверка корректности карт
+    // Проверяем корректность карт
     for (int i = 0; i < 2 + board.get_num_cards(); i++) {
         const Rank rank = all_cards[i].get_rank();
         const Suit suit = all_cards[i].get_suit();
 
         if (rank == NONE_RANK || suit == NONE_SUIT) {
-           
-            continue;
+            continue; // Пропуск некорректных карт
         }
 
         if (rank < 0 || rank >= NUM_RANKS || suit < 0 || suit >= NUM_SUITS) {
-           
-            continue;
+            continue; // Пропуск карт с некорректными значениями
         }
 
         card_count[rank]++;
         suit_count[suit]++;
     }
+
 
     // Переменные для комбинаций
     Rank four_of_a_kind = NONE_RANK, three_of_a_kind = NONE_RANK, top_pair = NONE_RANK, second_pair = NONE_RANK;
@@ -365,21 +371,22 @@ PokerCombination determine_hand(Hand hand, Board board) {
 
 
 void calculate_probabilities(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], int choice_numSimulations, Settings_debugging_mode* settings) {
-    // Сброс статистики побед, поражений и ничьих для каждого игрока
+    // Сброс статистики
     for (int i = 0; i < game->get_current_players(); i++) {
         game->get_player(i).set_wins(0);
         game->get_player(i).set_ties(0);
         game->get_player(i).set_losses(0);
     }
 
-    // Инициализация массива использованных карт
+    // Инициализация массива used_cards
     initialize_used_cards(game, used_cards);
 
+    // Основной цикл симуляции
     for (int sim = 0; sim < choice_numSimulations; sim++) {
         Card deck[52];
         int deck_index = 0;
 
-        // Создание и заполнение колоды, исключая карты, которые уже используются
+        // Заполнение колоды, исключая уже используемые карты
         for (int rank = 0; rank < NUM_RANKS; rank++) {
             for (int suit = 0; suit < NUM_SUITS; suit++) {
                 if (!used_cards[rank][suit]) {
@@ -392,27 +399,44 @@ void calculate_probabilities(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], 
         // Перемешивание колоды
         for (int j = deck_index - 1; j > 0; j--) {
             int k = rand() % (j + 1);
-            Card temp = deck[j];
-            deck[j] = deck[k];
-            deck[k] = temp;
+            std::swap(deck[j], deck[k]);
         }
 
-        // Формирование доски (simulation_board)
+        // Формирование симуляционной доски
         Card simulation_board[5];
         int num_existing_board_cards = game->get_board().get_num_cards();
 
-        // Копируем уже известные карты борда
+        // Проверяем, чтобы число карт борда было корректным
+        if (num_existing_board_cards > 5) {
+            fprintf(stderr, "Ошибка: недопустимое количество карт на борде (%d)\n", num_existing_board_cards);
+            continue;
+        }
+
+        // Копирование существующих карт борда
         for (int j = 0; j < num_existing_board_cards; j++) {
             simulation_board[j] = game->get_board().get_card(j);
         }
 
-        // Добавляем недостающие карты на борд из перемешанной колоды
+        // Добавление недостающих карт из колоды
         int sim_board_index = num_existing_board_cards;
         while (sim_board_index < 5 && deck_index > 0) {
             simulation_board[sim_board_index++] = deck[--deck_index];
         }
 
-        // Создаем объект доски для симуляции
+        // Проверяем, что симуляционная доска заполнена корректно
+        if (sim_board_index != 5) {
+            fprintf(stderr, "Ошибка: доска заполнена некорректно. sim_board_index = %d\n", sim_board_index);
+            continue;
+        }
+
+        //// Отладочный вывод содержимого simulation_board
+        //fprintf(stdout, "Симуляция %d: Карты на доске: ", sim);
+        //for (int j = 0; j < 5; j++) {
+        //    fprintf(stdout, "%d%s ", simulation_board[j].get_rank(), simulation_board[j].get_suit_name());
+        //}
+        //fprintf(stdout, "\n");
+
+        // Установка доски для симуляции
         Board simulated_board;
         simulated_board.set_num_cards(5);
         for (int j = 0; j < 5; j++) {
@@ -458,6 +482,7 @@ void calculate_probabilities(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], 
         // Отладочный режим
         calculate_probabilities_debugging(game, settings, simulated_board, player_hands, sim, tie, best_player);
 
+        // Освобождение памяти
         free(player_hands);
     }
 
@@ -474,7 +499,6 @@ void calculate_probabilities(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], 
 
 
 void initialize_used_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS]) {
-
     
 }
 

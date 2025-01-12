@@ -40,7 +40,7 @@ void shuffle_deck(Card* deck, int size);
 void create_deck(Card* deck, bool used_cards[NUM_RANKS][NUM_SUITS]);
 
 // Функции логики игры
-PokerCombination determine_hand(Hand hand, Board board);
+PokerCombination determine_hand(const Hand hand, const Board board);
 int compare_hands(PokerCombination hand1, PokerCombination hand2);
 void print_hand(PokerCombination hand);
 void print_board_cards(const Board* board);

@@ -129,7 +129,7 @@ private:
 
 public:
     Board();
-    Board(bool initial_used_cards[NUM_RANKS][NUM_SUITS]); // Новый конструктор
+    void update_used_cards();
     void set_used_cards(bool new_used_cards[NUM_RANKS][NUM_SUITS]);
     int get_num_cards() const;
     const Card& get_card(int index) const;
