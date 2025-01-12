@@ -9,6 +9,10 @@
 #include <stdbool.h>
 #include <string.h>
 #include <conio.h>
+#include <cstdlib>
+#include <ctime>
+#include <vector>
+
 
 #define NUM_RANKS 13
 #define NUM_SUITS 4

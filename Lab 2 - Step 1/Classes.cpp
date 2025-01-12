@@ -201,7 +201,7 @@ void Board::set_card(int index, const Card& card, bool used_cards[NUM_RANKS][NUM
         }
 
         cards[index] = card;
-        used_cards[card.get_rank()][card.get_suit()] = true;
+        
 
     }
 }

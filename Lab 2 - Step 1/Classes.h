@@ -193,4 +193,5 @@ typedef struct {
     bool wins_mode;
     bool show;
     int current_winner;
+    int debug_player_index; // Индекс игрока для отладки
 } Settings_debugging_mode;

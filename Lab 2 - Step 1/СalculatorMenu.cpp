@@ -66,57 +66,15 @@ void handle_calculatorMenu_choice(int choice, Game* game, bool* exit, PokerCombi
         printf("Ошибка: недостаточно памяти для вычисления комбинаций.\n");
         press_any_key_to_continue();
         return;
-    }
-
-    used_cards[NUM_RANKS][NUM_SUITS] = { false };
-
-    const Hand& hand0 = game->get_player(0).get_hand();
-    int rank = hand0.get_const_card(0).get_rank();
-    int suit = hand0.get_const_card(0).get_suit(); // ВЫЧИТАНИЕ 1 ДЛЯ МАСТИ
-
-    // Проверка корректности индексов
-    if (rank >= 2 && rank <= 14 && suit > 0 && suit < 4) {
-        used_cards[rank][suit - 1] = true;
-    }
-
-    rank = hand0.get_const_card(1).get_rank();
-    suit = hand0.get_const_card(1).get_suit();  // ВЫЧИТАНИЕ 1 ДЛЯ МАСТИ
-    if (rank >= 2 && rank <= 14 && suit > 0 && suit < 4) {
-        used_cards[rank][suit - 1] = true;
-    }
-
-    // Помечаем карты игрока 2 как занятые
-    const Hand& hand1 = game->get_player(1).get_hand();  // Получаем руку второго игрока
-    rank = hand1.get_const_card(0).get_rank();
-    suit = hand1.get_const_card(0).get_suit();  // ВЫЧИТАНИЕ 1 ДЛЯ МАСТИ
-    if (rank >= 2 && rank <= 14 && suit > 0 && suit < 4) {
-        used_cards[rank][suit - 1] = true;
-    }
-
-    rank = hand1.get_const_card(1).get_rank();
-    suit = hand1.get_const_card(1).get_suit();  // ВЫЧИТАНИЕ 1 ДЛЯ МАСТИ
-    if (rank >= 2 && rank <= 14 && suit > 0 && suit < 4) {
-        used_cards[rank][suit - 1] = true;
-    }
-
-    // Помечаем карты на доске как занятые
-    for (int i = 0; i < game->get_board().get_num_cards(); i++) {
-        rank = game->get_board().get_card(i).get_rank();
-        suit = game->get_board().get_card(i).get_suit() - 1;  // ВЫЧИТАНИЕ 1 ДЛЯ МАСТИ
-        if (rank >= 2 && rank <= 14 && suit >= 0 && suit < 4) {
-            used_cards[rank][suit] = true;
-        }
-    }
+    }    
 
     // Обработка выбора пользователя
     switch (choice) {
     case -1:
-
         clearConsole();
         break;
 
     case 0:
-
         printf("Вы уверены? Введённые вами карты сбросятся\n");
         printf("Y/yes - да\n");
         printf("N/no - нет\n");
@@ -141,25 +99,21 @@ void handle_calculatorMenu_choice(int choice, Game* game, bool* exit, PokerCombi
         break;
 
     case 1:
-
         clearConsole();
         print_editPlayerMenu(game, used_cards);
         break;
 
     case 2:
-
         clearConsole();
         print_editBoardMenu(game, used_cards);
         break;
 
     case 3:
-
         clearConsole();
         print_probabilityMenu(game, used_cards);
         break;
 
     case 4:
-
         for (int i = 0; i < game->get_current_players() && i < game->get_num_players(); i++) {
             if (game->get_player(i).get_hand().get_const_card(0).get_rank() != NONE_RANK &&
                 game->get_player(i).get_hand().get_const_card(1).get_rank() != NONE_RANK) {
@@ -176,14 +130,12 @@ void handle_calculatorMenu_choice(int choice, Game* game, bool* exit, PokerCombi
         break;
 
     case 5:
-
         print_used_cards(used_cards);
         press_any_key_to_continue();
         clearConsole();
         break;
 
     default:
-
         clearConsole();
         break;
     }

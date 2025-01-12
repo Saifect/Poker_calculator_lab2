@@ -141,6 +141,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EditBoardMenu.cpp" />
+    <ClCompile Include="ProbabilityMenu.cpp" />
+    <ClCompile Include="SimulationLogic.cpp" />
     <ClCompile Include="СalculatorMenu.cpp" />
     <ClCompile Include="Classes.cpp" />
     <ClCompile Include="CommonFunctions.cpp" />
