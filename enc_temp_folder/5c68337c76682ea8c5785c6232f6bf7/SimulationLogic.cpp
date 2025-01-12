@@ -213,11 +213,11 @@ PokerCombination determine_hand(Hand hand, Board board) {
         Rank rank = all_cards[i].get_rank();
         Suit suit = all_cards[i].get_suit();
         if (rank == NONE_RANK || suit == NONE_SUIT) {
-            printf("Error: Invalid card detected at index %d (Rank: %d, Suit: %d)\n", i, rank, suit);
+         
             continue;
         }
         if (rank < 0 || rank >= NUM_RANKS || suit < 0 || suit >= NUM_SUITS) {
-            printf("Error: Card at index %d has out-of-range values (Rank: %d, Suit: %d)\n", i, rank, suit);
+           
             continue;
         }
         card_count[rank]++;
