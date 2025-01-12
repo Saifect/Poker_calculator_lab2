@@ -190,19 +190,27 @@ void Board::set_num_cards(int num) {
 }
 
 void Board::set_card(int index, const Card& card) {
-    if (index >= 0 && index < 5) {
-
-        if (used_cards[card.get_rank()][card.get_suit()]) {
-            printf("Ошибка: Карта %s %s уже используется!\n",
-                card.get_rank_name(), card.get_suit_name());
-            return;
-        }
-
-        cards[index] = card;
-
-
+    if (index < 0 || index >= 5) {
+        
+        return;
     }
+
+    if (used_cards[card.get_rank()][card.get_suit()]) {
+        
+         
+        return;
+    }
+
+    if (card.get_rank() == NONE_RANK || card.get_suit() == NONE_SUIT) {
+       
+        return;
+    }
+
+    // Установка карты и отметка как используемой
+    cards[index] = card;
+ 
 }
+
 
 void Board::set_used_cards(bool new_used_cards[NUM_RANKS][NUM_SUITS]) {
     for (int i = 0; i < NUM_RANKS; ++i)

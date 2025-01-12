@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <algorithm> // Подключаем заголовочный файл для std::sort
 
 
 #define NUM_RANKS 13
