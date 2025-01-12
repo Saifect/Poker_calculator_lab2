@@ -37,6 +37,11 @@ public:
     void set_suit(Suit suit);
     void set_rank(Rank rank);
 
+    // Установка флага использования карты
+    void set_used(bool used) {
+        is_used = used;
+    }
+
     // Возвращает название ранга
     const char* get_rank_name() const;
 

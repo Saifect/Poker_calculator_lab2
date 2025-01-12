@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Classes.h"
+#include "CommonFunctions.h"
 #include <cstdlib>
 #include <ctime>
 
@@ -66,8 +67,6 @@ void Card::init_card(Suit suit, Rank rank, bool used_cards[NUM_RANKS][NUM_SUITS]
 
     this->suit = suit;
     this->rank = rank;
-    used_cards[rank][suit] = true;
-    is_used = true;
 }
 
 void Card::init_random_card(bool used_cards[NUM_RANKS][NUM_SUITS]) {
@@ -189,6 +188,8 @@ void Board::set_num_cards(int num) {
 
 void Board::set_card(int index, const Card& card, bool used_cards[NUM_RANKS][NUM_SUITS]) {
     if (index >= 0 && index < 5) {
+       
+
         if (cards[index].get_rank() != NONE_RANK && cards[index].get_suit() != NONE_SUIT) {
             used_cards[cards[index].get_rank()][cards[index].get_suit()] = false;
         }
@@ -201,8 +202,10 @@ void Board::set_card(int index, const Card& card, bool used_cards[NUM_RANKS][NUM
 
         cards[index] = card;
         used_cards[card.get_rank()][card.get_suit()] = true;
+
     }
 }
+
 
 void Board::print_board_cards() const {
     printf("Карты на столе:\n");

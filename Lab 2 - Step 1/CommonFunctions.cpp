@@ -13,7 +13,7 @@ double scanf_secure(const char* type) {
             else {
                 printf("Ошибка ввода. Пожалуйста, введите целое число.\n");
                 press_any_key_to_continue();
-                buffer_clear();
+                clear_buffer();
                 return -1;
             }
         }
@@ -25,7 +25,7 @@ double scanf_secure(const char* type) {
             }
             else {
                 printf("Ошибка ввода. Пожалуйста, введите вещественное число: ");
-                buffer_clear();
+                clear_buffer();
             }
         }
         else if (strcmp(type, "double") == 0) {
@@ -36,7 +36,7 @@ double scanf_secure(const char* type) {
             }
             else {
                 printf("Ошибка ввода. Пожалуйста, введите вещественное число: ");
-                buffer_clear();
+                clear_buffer();
             }
         }
         else if (strcmp(type, "bool") == 0) {
@@ -50,12 +50,12 @@ double scanf_secure(const char* type) {
                 }
                 else {
                     printf("Ошибка ввода. Пожалуйста, введите 'true' или 'false': ");
-                    buffer_clear();
+                    clear_buffer();
                 }
             }
             else {
                 printf("Ошибка ввода. Пожалуйста, введите 'true' или 'false': ");
-                buffer_clear();
+                clear_buffer();
             }
         }
         else {
@@ -75,7 +75,7 @@ void clearConsole() {
 
 
 // Очистка буфераа
-void buffer_clear() {
+void clear_buffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
@@ -92,7 +92,7 @@ void string_get_secure(char* buffer, int size) {
         line_remove(buffer);
     }
     else {
-        buffer_clear();
+        clear_buffer();
     }
 }
 
