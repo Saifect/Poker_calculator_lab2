@@ -321,7 +321,7 @@ void deal_board_random_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], 
             suit_choice = rand() % NUM_SUITS;
 
             if (!used_cards[rank_choice][suit_choice]) {
-                temp_cards[i].init_card((Suit)suit_choice, (Rank)rank_choice);
+                temp_cards[i].init_card((Suit)suit_choice, (Rank)rank_choice, used_cards);
                 temp_card_count++;
                 break;
             }
@@ -368,7 +368,7 @@ void clear_board(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS]) {
         if (card.get_rank() != NONE_RANK && card.get_suit() != NONE_SUIT) {
             used_cards[card.get_rank()][card.get_suit()] = false;
         }
-        card.init_card(NONE_SUIT, NONE_RANK);
+        card.init_card(NONE_SUIT, NONE_RANK, used_cards);
     }
 
     game->set_phase("preflop");
@@ -381,7 +381,7 @@ void clear_board_turn(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS]) {
     if (card.get_rank() != NONE_RANK && card.get_suit() != NONE_SUIT) {
         used_cards[card.get_rank()][card.get_suit()] = false;
     }
-    card.init_card(NONE_SUIT, NONE_RANK);
+    card.init_card(NONE_SUIT, NONE_RANK, used_cards);
 
     game->get_board().set_num_cards(3); // Устанавливаем количество карт на столе обратно к 3 (флоп)
     game->set_phase("flop");
@@ -394,7 +394,7 @@ void clear_board_river(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS]) {
     if (card.get_rank() != NONE_RANK && card.get_suit() != NONE_SUIT) {
         used_cards[card.get_rank()][card.get_suit()] = false;
     }
-    card.init_card(NONE_SUIT, NONE_RANK);
+    card.init_card(NONE_SUIT, NONE_RANK, used_cards);
 
     game->get_board().set_num_cards(4); // Устанавливаем количество карт на столе обратно к 4 (после терна)
     game->set_phase("turn");

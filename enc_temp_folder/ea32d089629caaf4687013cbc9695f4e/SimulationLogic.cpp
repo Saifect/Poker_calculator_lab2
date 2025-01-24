@@ -430,6 +430,31 @@ void calculate_probabilities(Game* game, const bool used_cards[NUM_RANKS][NUM_SU
 }
 
 
+void initialize_used_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS]) {
+    // Очищаем массив
+    memset(used_cards, false, sizeof(bool) * NUM_RANKS * NUM_SUITS);
+
+    // Помечаем карты игроков как использованные
+    for (int i = 0; i < game->get_current_players(); i++) {
+        Card first = game->get_player(i).get_hand().get_card(0);
+        Card second = game->get_player(i).get_hand().get_card(1);
+
+        if (first.is_valid()) {
+            used_cards[first.get_rank()][first.get_suit()] = true;
+        }
+        if (second.is_valid()) {
+            used_cards[second.get_rank()][second.get_suit()] = true;
+        }
+    }
+
+    // Помечаем карты на борде как использованные
+    for (int i = 0; i < game->get_board().get_num_cards(); i++) {
+        Card board_card = game->get_board().get_card(i);
+        if (board_card.is_valid()) {
+            used_cards[board_card.get_rank()][board_card.get_suit()] = true;
+        }
+    }
+}
 
 
 void calculate_probabilities_debugging(Game* game, Settings_debugging_mode* settings, Board simulated_board, PokerCombination* player_hands, int current_simulation, bool tie, int best_player) {

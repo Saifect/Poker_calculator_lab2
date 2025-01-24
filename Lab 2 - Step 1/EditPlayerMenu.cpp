@@ -197,7 +197,7 @@ void deal_cards(Player* player, bool used_cards[NUM_RANKS][NUM_SUITS]) {
             if (rank_choice_card[current_card] == 0) {
                 // Отмена ввода
                 for (int j = 0; j < current_card; j++) {
-                    player->get_hand().get_card(j).init_card(NONE_SUIT, NONE_RANK);
+                    player->get_hand().get_card(j).init_card(NONE_SUIT, NONE_RANK, used_cards);
                     used_cards[rank_choice_card[j] - 2][suit_choice_card[j] - 1] = false;
                 }
                 return;
@@ -212,7 +212,7 @@ void deal_cards(Player* player, bool used_cards[NUM_RANKS][NUM_SUITS]) {
             if (suit_choice_card[current_card] == 0) {
                 // Отмена ввода
                 for (int j = 0; j < current_card; j++) {
-                    player->get_hand().get_card(j).init_card(NONE_SUIT, NONE_RANK);
+                    player->get_hand().get_card(j).init_card(NONE_SUIT, NONE_RANK, used_cards);
                     used_cards[rank_choice_card[j] - 2][suit_choice_card[j] - 1] = false;
                 }
                 return;

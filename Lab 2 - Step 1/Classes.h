@@ -36,6 +36,7 @@ public:
     // Добавление сеттеров
     void set_suit(Suit suit);
     void set_rank(Rank rank);
+    bool is_valid() const;
 
     // Установка флага использования карты
     void set_used(bool used) {
@@ -55,7 +56,7 @@ public:
     void release_card(bool used_cards[NUM_RANKS][NUM_SUITS]);
 
     // Инициализация карты
-    void init_card(Suit suit, Rank rank);
+    void init_card(Suit suit, Rank rank, bool used_cards[NUM_RANKS][NUM_SUITS]);
 
     // Инициализация случайной карты
     void init_random_card(bool used_cards[NUM_RANKS][NUM_SUITS]);

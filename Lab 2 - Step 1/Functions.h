@@ -48,7 +48,7 @@ void deal_board_random_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], 
 
 // Прототипы функций, если они определены в другом месте или файле
 void initialize_used_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS]);
-void calculate_probabilities(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], int choice_numSimulations, Settings_debugging_mode* settings);
+void calculate_probabilities(Game* game, const bool used_cards[NUM_RANKS][NUM_SUITS], int choice_numSimulations, Settings_debugging_mode* settings);
 void print_probabilityMenu(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS]);
 void compare_all_hands(Game* game, PokerCombination hands[]);
 void calculate_probabilities_debugging(Game* game, Settings_debugging_mode* settings, Board simulated_board, PokerCombination* player_hands, int current_simulation, bool tie, int best_player);

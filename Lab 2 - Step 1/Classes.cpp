@@ -57,17 +57,26 @@ void Card::release_card(bool used_cards[NUM_RANKS][NUM_SUITS]) {
     rank = NONE_RANK;
 }
 
-void Card::init_card(Suit suit, Rank rank) {
-    release_card(used_cards);
-
+void Card::init_card(Suit suit, Rank rank, bool used_cards[NUM_RANKS][NUM_SUITS]) {
+    // Проверяем, используется ли карта
     if (used_cards[rank][suit]) {
-        printf("Ошибка: Карта %s %s уже используется!\n", get_rank_name(), get_suit_name());
+        fprintf(stderr, "Ошибка: Карта %d %d уже используется.\n", rank, suit);
         return;
     }
 
+    // Устанавливаем ранг и масть карты
     this->suit = suit;
     this->rank = rank;
+    this->is_used = true; // Этот флаг касается только объекта `Card`, а не глобального массива
 }
+
+
+// Метод для проверки валидности карты
+bool Card::is_valid() const {
+    return rank >= TWO && rank <= ACE && suit >= HEARTS && suit <= SPADES;
+}
+
+
 
 void Card::init_random_card(bool used_cards[NUM_RANKS][NUM_SUITS]) {
     release_card(used_cards);
