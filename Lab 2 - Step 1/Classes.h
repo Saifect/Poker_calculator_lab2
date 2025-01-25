@@ -106,6 +106,7 @@ public:
 
     // Геттер для доступа к руке
     Hand& get_hand();
+    const Hand& get_hand() const;  // Константный метод
 
     // Сеттер для установки руки игрока
     void set_hand(const Hand& h, bool used_cards[NUM_RANKS][NUM_SUITS]);
@@ -130,6 +131,7 @@ private:
 
 public:
     Board();
+    Board(const Card cards_array[5]);
     void update_used_cards();
     void set_used_cards(bool new_used_cards[NUM_RANKS][NUM_SUITS]);
     int get_num_cards() const;
@@ -191,8 +193,10 @@ typedef struct {
 } PokerCombination;
 
 typedef struct {
-    bool ties_mode;
-    bool wins_mode;
+    bool ties_visible_mode;
+    bool wins_visible_mode;
+    bool simulations_visible_mode;
+    bool tie;
     bool show;
     int current_winner;
     int debug_player_index; // Индекс игрока для отладки

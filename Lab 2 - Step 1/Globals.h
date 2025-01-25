@@ -20,3 +20,6 @@
 #define MAX_BOARD_CARDS 5
 
 extern bool used_cards[NUM_RANKS][NUM_SUITS]; // ќбъ€вление глобальной переменной
+const int MIN_SIMULATIONS = 100;
+const int MAX_SIMULATIONS = 5000000;
+const int DEFAULT_SIMULATIONS = 250000;

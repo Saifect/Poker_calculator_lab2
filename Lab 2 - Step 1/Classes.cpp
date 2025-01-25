@@ -48,6 +48,7 @@ void Card::print_card() const {
     printf("%s %s\n", get_rank_name(), get_suit_name());
 }
 
+
 void Card::release_card(bool used_cards[NUM_RANKS][NUM_SUITS]) {
     if (is_used && suit != NONE_SUIT && rank != NONE_RANK) {
         used_cards[rank][suit] = false;
@@ -75,6 +76,7 @@ void Card::init_card(Suit suit, Rank rank, bool used_cards[NUM_RANKS][NUM_SUITS]
 bool Card::is_valid() const {
     return rank >= TWO && rank <= ACE && suit >= HEARTS && suit <= SPADES;
 }
+
 
 
 
@@ -109,6 +111,10 @@ void Hand::set_card(int index, const Card& card) {
         return;
     }
     this->card[index] = card;
+}
+
+const Hand& Player::get_hand() const {
+    return hand;
 }
 
 void Hand::init_hand(const Card& card1, const Card& card2) {
@@ -178,8 +184,14 @@ Board::Board() : num_cards(0) {
     
 }
 
-
-
+Board::Board(const Card cards_array[5]) {
+    num_cards = 0;
+    for (int i = 0; i < 5; i++) {
+        if (cards_array[i].is_valid()) {
+            cards[num_cards++] = cards_array[i];
+        }
+    }
+}
 
 
 int Board::get_num_cards() const {
@@ -187,8 +199,33 @@ int Board::get_num_cards() const {
 }
 
 const Card& Board::get_card(int index) const {
-    return cards[index];
+    if (index < 0 || index >= num_cards) {
+        static const Card invalid_card;
+        fprintf(stderr, "Ошибка: индекс карты %d вне допустимого диапазона (0-%d).\n", index, num_cards - 1);
+        return invalid_card;
+    }
+
+    const Card& card = cards[index];
+    if (!card.is_valid()) {
+     
+    }
+    return card;
 }
+
+// Отладочная печать карт с защитой
+void Board::debug_print_cards() const {
+    printf("Отладочный вывод карт на столе:\n");
+    for (int i = 0; i < 5; i++) {
+        const Card& card = cards[i];
+        if (card.is_valid()) {
+            card.print_card();
+        }
+        else {
+            printf("Карта %d: НЕИЗВЕСТНО (не задано)\n", i + 1);
+        }
+    }
+}
+
 
 void Board::init_board() {
     clear_board(used_cards);
@@ -253,10 +290,16 @@ void Board::add_card(const Card& card, bool used_cards[NUM_RANKS][NUM_SUITS]) {
         }
 
         cards[num_cards] = card;
+        printf("Добавлена карта: %s %s на позицию %d\n",
+            card.get_rank_name(), card.get_suit_name(), num_cards);
         used_cards[card.get_rank()][card.get_suit()] = true;
         num_cards++;
     }
+    else {
+        printf("Ошибка: На доске уже 5 карт!\n");
+    }
 }
+
 
 void Board::clear_board(bool used_cards[NUM_RANKS][NUM_SUITS]) {
     for (int i = 0; i < num_cards; i++) {
@@ -266,14 +309,6 @@ void Board::clear_board(bool used_cards[NUM_RANKS][NUM_SUITS]) {
         cards[i] = Card(); // Обнуление карты
     }
     num_cards = 0; // Сброс количества карт
-}
-
-
-void Board::debug_print_cards() const {
-    printf("Отладочный вывод карт на столе:\n");
-    for (int i = 0; i < 5; i++) {
-        cards[i].print_card();
-    }
 }
 
 Game::Game() : num_players(0), current_players(0) {}

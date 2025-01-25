@@ -15,7 +15,7 @@ void print_used_cards(bool used_cards[NUM_RANKS][NUM_SUITS]);
 // Функции главного меню
 void get_user_choice(int* choice);
 void handle_mainMenu_choice(Game* game, PokerCombination* result_player, int choice);
-void handle_probabilityMenu_choice(int choice, Game* game, bool* exit, bool used_cards[NUM_RANKS][NUM_SUITS], int* num_simulations, Settings_debugging_mode* settings_debugging_mode);
+void handle_probabilityMenu_choice(int choice, Game* game, bool* exit, bool used_cards[NUM_RANKS][NUM_SUITS], int* num_simulations, Settings_debugging_mode* settings);
 
 // Функции обработки меню
 void handle_calculatorMenu_choice(int choice, Game* game, bool* exit, PokerCombination* result_player);
@@ -47,8 +47,17 @@ void print_board_cards(const Board* board);
 void deal_board_random_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], int start_index, int num_cards);
 
 // Прототипы функций, если они определены в другом месте или файле
-void initialize_used_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS]);
-void calculate_probabilities(Game* game, const bool used_cards[NUM_RANKS][NUM_SUITS], int choice_numSimulations, Settings_debugging_mode* settings);
+void initialize_board_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS]);
+void calculate_probabilities(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], int choice_numSimulations, Settings_debugging_mode* settings);
 void print_probabilityMenu(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS]);
 void compare_all_hands(Game* game, PokerCombination hands[]);
 void calculate_probabilities_debugging(Game* game, Settings_debugging_mode* settings, Board simulated_board, PokerCombination* player_hands, int current_simulation, bool tie, int best_player);
+
+void print_player_cards(const Game* game);
+void print_board_info(const Game* game);
+void print_debug_menu(const Settings_debugging_mode* settings);
+void print_menu_header(const char* title);
+void toggle_debug_option(bool* option, const char* description);
+bool confirm_debug_simulation(int num_simulations);
+
+void debug_board(const Board& board);
