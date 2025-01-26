@@ -241,7 +241,7 @@ PokerCombination determine_hand(Hand hand, Board board) {
             consecutive++;
             if (consecutive >= 5) {
                 straight_high_card = static_cast<Rank>(rank + 4); // Высшая карта стрита
-                break; // Прерываем, как только найден стрит
+                break;
             }
         }
         else {
@@ -253,12 +253,6 @@ PokerCombination determine_hand(Hand hand, Board board) {
         straight_high_card = FIVE;
     }
 
-    if (straight_high_card != NONE_RANK) {
-        result.hand_rank = STRAIGHT;
-        result.high_card = straight_high_card;
-        return result;
-    }
-
     // Определение флеша
     int flush_suit = -1;
     for (int suit = 0; suit < NUM_SUITS; suit++) {
@@ -267,7 +261,37 @@ PokerCombination determine_hand(Hand hand, Board board) {
             break;
         }
     }
+
+    if (flush_suit != -1 && straight_high_card != NONE_RANK) {
+        // Проверка на стрит-флеш
+        int flush_cards_count = 0;
+        Rank flush_ranks[5] = { NONE_RANK };
+        for (int i = 0; i < total_cards; i++) {
+            if (all_cards[i].get_suit() == flush_suit) {
+                flush_ranks[flush_cards_count++] = all_cards[i].get_rank();
+                if (flush_cards_count == 5) break;
+            }
+        }
+        std::sort(flush_ranks, flush_ranks + flush_cards_count, std::greater<Rank>());
+
+        consecutive = 0;
+        for (int i = 0; i < flush_cards_count; i++) {
+            if (i > 0 && flush_ranks[i] == flush_ranks[i - 1] - 1) {
+                consecutive++;
+            }
+            else {
+                consecutive = 1;
+            }
+            if (consecutive == 5) {
+                result.hand_rank = STRAIGHT_FLUSH;
+                result.high_card = flush_ranks[i - 4];
+                return result;
+            }
+        }
+    }
+
     if (flush_suit != -1) {
+        // Флеш
         result.hand_rank = FLUSH;
         int flush_cards_count = 0;
         for (int i = 0; i < total_cards; i++) {
@@ -278,6 +302,13 @@ PokerCombination determine_hand(Hand hand, Board board) {
         }
         std::sort(result.kicker, result.kicker + 5, std::greater<Rank>());
         result.high_card = result.kicker[0];
+        return result;
+    }
+
+    if (straight_high_card != NONE_RANK) {
+        // Стрит
+        result.hand_rank = STRAIGHT;
+        result.high_card = straight_high_card;
         return result;
     }
 
@@ -304,11 +335,13 @@ PokerCombination determine_hand(Hand hand, Board board) {
     // Фулл-хаус
     Rank three_of_a_kind = NONE_RANK, pair = NONE_RANK;
     for (int rank = ACE; rank >= TWO; rank--) {
-        if (card_count[rank] == 3 && three_of_a_kind == NONE_RANK) {
+        if (card_count[rank] >= 3 && three_of_a_kind == NONE_RANK) {
             three_of_a_kind = static_cast<Rank>(rank);
         }
-        else if (card_count[rank] == 2 && pair == NONE_RANK) {
-            pair = static_cast<Rank>(rank);
+        else if (card_count[rank] >= 2) {
+            if (pair == NONE_RANK || pair < rank) {
+                pair = static_cast<Rank>(rank);
+            }
         }
     }
     if (three_of_a_kind != NONE_RANK && pair != NONE_RANK) {

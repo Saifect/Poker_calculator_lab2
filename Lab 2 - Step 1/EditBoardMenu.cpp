@@ -322,6 +322,7 @@ void deal_board_random_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], 
 
             if (!used_cards[rank_choice][suit_choice]) {
                 temp_cards[i].init_card((Suit)suit_choice, (Rank)rank_choice, used_cards);
+                used_cards[rank_choice][suit_choice] = true; // Помечаем карту как использованную
                 temp_card_count++;
                 break;
             }
@@ -340,7 +341,6 @@ void deal_board_random_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], 
         for (int i = 0; i < num_cards; i++) {
 
             game->get_board().set_card(start_index + i, temp_cards[i]);
-
         }
 
         // Обновляем количество карт на доске
@@ -359,6 +359,15 @@ void deal_board_random_cards(Game* game, bool used_cards[NUM_RANKS][NUM_SUITS], 
     }
     else {
         printf("Не удалось ввести все карты, изменения отменены.\n");
+        press_any_key_to_continue();
+        for (int i = 0; i < temp_card_count; i++) {
+            Rank rank = temp_cards[i].get_rank();
+            Suit suit = temp_cards[i].get_suit();
+            if (rank != NONE_RANK && suit != NONE_SUIT) {
+                used_cards[rank][suit] = false;
+            }
+        }
+
     }
 }
 

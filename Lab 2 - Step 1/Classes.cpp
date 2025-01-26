@@ -108,6 +108,7 @@ Hand::Hand(const Card& card1, const Card& card2) {
 void Hand::set_card(int index, const Card& card) {
     if (index < 0 || index >= 2) {
         printf("Ошибка: индекс карты вне допустимого диапазона (0 или 1).\n");
+        press_any_key_to_continue();
         return;
     }
     this->card[index] = card;
@@ -237,15 +238,7 @@ void Board::set_num_cards(int num) {
 
 void Board::set_card(int index, const Card& card) {
     if (index >= 0 && index < 5) {
-
-        if (used_cards[card.get_rank()][card.get_suit()]) {
-         
-            return;
-        }
-
         cards[index] = card;
-
-
     }
 }
 
